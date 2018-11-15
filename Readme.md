@@ -1,3 +1,13 @@
+<!-- default file list -->
+*Files to look at*:
+
+* [HomeController.cs](./CS/WebSite/Controllers/HomeController.cs)
+* [Customer.cs](./CS/WebSite/Models/Customer.cs)
+* [CityPartial.ascx](./CS/WebSite/Views/Home/CityPartial.ascx)
+* [CountryPartial.ascx](./CS/WebSite/Views/Home/CountryPartial.ascx)
+* [Index.aspx](./CS/WebSite/Views/Home/Index.aspx)
+* [Success.aspx](./CS/WebSite/Views/Home/Success.aspx)
+<!-- default file list end -->
 # MVC ComboBox Extension - Cascading Combo Boxes
 
 
