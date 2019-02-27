@@ -6,7 +6,6 @@
         settings.Properties.ValueType = typeof(int);
         settings.Properties.TextField = "Name";
         settings.Properties.ValueField = "ID";
-        settings.Properties.EnableCallbackMode = true;
         settings.Properties.CallbackPageSize = 20;
         settings.Properties.ClientSideEvents.SelectedIndexChanged = "function(s, e) { City.PerformCallback(); }";
 }).BindList(CS.Models.Country.GetCountries()).Bind(Model.Country).GetHtml()  
