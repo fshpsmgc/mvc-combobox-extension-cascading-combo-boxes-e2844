@@ -1,0 +1,1 @@
+﻿<%@ Application Codebehind="Global.asax.vb" Inherits="DevExpressMvc3CascadingCombo.MvcApplication" Language="vb" %>
