@@ -1,4 +1,4 @@
-@ModelType VB.Customer
+@ModelType CS.Models.Customer
 @Code
     ViewBag.Title = "Home Page"
 End Code

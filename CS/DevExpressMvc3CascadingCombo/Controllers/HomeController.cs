@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using DevExpress.Web.Mvc;
+using CS.Models;
 namespace CS.Controllers {
-    using DevExpress.Web.Mvc;
-    using CS.Models;
+    
 
     public class HomeController : Controller {
         [AcceptVerbs(HttpVerbs.Get)]
