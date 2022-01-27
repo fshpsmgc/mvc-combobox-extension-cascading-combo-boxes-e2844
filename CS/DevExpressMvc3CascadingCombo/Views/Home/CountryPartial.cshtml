@@ -1,11 +1,13 @@
 @model CS.Models.Customer
 
 @Html.DevExpress().ComboBox(settings => {
-        settings.Name = "Country";
-        settings.CallbackRouteValues = new { Controller = "Home", Action = "CountryPartial" };
-        settings.Properties.ValueType = typeof(int);
-        settings.Properties.TextField = "Name";
-        settings.Properties.ValueField = "ID";
-        settings.Properties.CallbackPageSize = 20;
-        settings.Properties.ClientSideEvents.SelectedIndexChanged = "function(s, e) { City.PerformCallback(); }";
+    settings.Name = "Country";
+    settings.Properties.Caption = "Country";
+    settings.Properties.CaptionSettings.Position = EditorCaptionPosition.Top;
+    settings.CallbackRouteValues = new { Controller = "Home", Action = "CountryPartial" };
+    settings.Properties.ValueType = typeof(int);
+    settings.Properties.TextField = "Name";
+    settings.Properties.ValueField = "ID";
+    settings.Properties.CallbackPageSize = 20;
+    settings.Properties.ClientSideEvents.SelectedIndexChanged = "function(s, e) { City.PerformCallback(); }";
 }).BindList(CS.Models.Country.GetCountries()).Bind(Model.Country).GetHtml()  

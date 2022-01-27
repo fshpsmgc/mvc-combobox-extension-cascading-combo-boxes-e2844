@@ -6,12 +6,10 @@ using System.Web.Mvc;
 using DevExpress.Web.Mvc;
 using CS.Models;
 namespace CS.Controllers {
-    
-
     public class HomeController : Controller {
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult Index() {
-            return View(new Customer { ID = 0, Name = "John", Country = 2, City = 2 });
+            return View(new Customer { ID = 0, Country = 2, City = 2 });
         }
         public ActionResult CountryPartial() {
             return PartialView(new Customer());
@@ -23,7 +21,7 @@ namespace CS.Controllers {
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Index([ModelBinder(typeof(DevExpressEditorsBinder))]Customer customer) {
             if(ModelState.IsValid) {
-                //post customer to database
+                //Post customer to database.
                 return RedirectToAction("Success");
             }
             else

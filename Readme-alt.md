@@ -12,10 +12,7 @@ This demo illustrates how to use two [ComboBox](https://docs.devexpress.com/AspN
 
 ![example demo](demo.gif)
 
-## Setup Combo Boxes, Tie Them to Models and the Server
-
-Use partial views to setup Country combo box ([CountryPartial.cshtml](./CS/DevExpressMvc3CascadingCombo/Views/Home/CountryPartial.cshtml)) and City combo box ([CityPartial.cshtml](./CS/DevExpressMvc3CascadingCombo/Views/Home/CityPartial.cshtml)). Use [BindList](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.ComboBoxExtension.BindList(System.Object)) method to bind combo box to the Country model. Set the Action property of the [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues) property to tie combo boxes to the server-side method with the specified name.
-
+Define two combo boxes that make up the cascading combo box. Each combo box is defined in its own partial view file ([CountryPartial.cshtml]() and [CityPartial.cshtml]()). Bind them to their respective models ([Country.cs](./CS/DevExpressMvc3CascadingCombo/Models/Country.cs) and [City.cs](./CS/DevExpressMvc3CascadingCombo/Models/City.cs)) with the [BindList](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.ComboBoxExtension.BindList(System.Object)) method. Set [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues) in the combo boxes' settings to tie them to the server-side methods:
 ```c#
 // CountryPartial.cshtml
 @Html.DevExpress().ComboBox(settings => {
@@ -32,45 +29,32 @@ Use partial views to setup Country combo box ([CountryPartial.cshtml](./CS/DevEx
     settings.CallbackRouteValues = new { Controller = "Home", Action = "CityPartial" };
     ...
 }).BindList(CS.Models.City.GetCities(Model.Country)).Bind(Model.City).GetHtml()
-```
+``` 
 
- Add them to the Index page:
-
-```c# 
-@using(Html.BeginForm()) {  
-    @Html.Partial("CountryPartial", Model)
-    @Html.Partial("CityPartial", Model)
-    ...
-```
-
-## On Client: Respond to a Selection Change and Initiate a Callback 
-Handle the first combo box's client-side [SelectedIndexChanged](https://docs.devexpress.com/AspNet/DevExpress.Web.ComboBoxClientSideEvents.SelectedIndexChanged) event. In the event handler, call the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.BeginCallback) method of the second combo box. This sends a callback to the server for the second editor to filter its item list.
-
-```c# 
-// Country combo box.
+In the first combo box's client-side [SelectedIndexChanged](https://docs.devexpress.com/AspNet/DevExpress.Web.ComboBoxClientSideEvents.SelectedIndexChanged) event handler, call the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.BeginCallback) method to send a callback for the second combo box to the server.
+```c#
+// Country combo box initialization.
     ...
     settings.Properties.ClientSideEvents.SelectedIndexChanged = "function(s, e) { City.PerformCallback(); }";
-    ... 
+    ...
 ```
 
-Handle the second combo box's client-side [BeginCallback](https://docs.devexpress.com/AspNet/DevExpress.Web.AutoCompleteBoxClientSideEvents.BeginCallback) event. In the event handler, pass the first combo box's selected value to the custom callback parameter to use it as a filter criterion on the server. 
-
+In the second combo box's client-side [BeginCallback](https://docs.devexpress.com/AspNet/DevExpress.Web.AutoCompleteBoxClientSideEvents.BeginCallback) event handler, pass the value of the first combo box in the event parameter's customArgs property. See the [Passing Values to Controller Action Through Callbacks](https://docs.devexpress.com/AspNetMvc/9941/common-features/callback-based-functionality/passing-values-to-a-controller-action-through-callbacks) topic for details.
 ```c#
-// City combo box.
+// City combo box initialization.
     ...
     settings.Properties.ClientSideEvents.BeginCallback = "function(s, e) { e.customArgs['Country'] = Country.GetValue(); }";
     ...
 ```
 
-## On Server: Filter Data Source Items
-In the controller, filter the items and return the updated view. Return a new City combo box partial view and initialize the Country parameter with the country index passed to the server in the custom callback parameter.
-
+On the server side, handle the method defined in the second combo box's CallbackRouteValues.Action parameter. In this method, use the event parameter's value as a filter to populate the second combo box's.
 ```c#
 public ActionResult CityPartial() {
     int country = (Request.Params["Country"] != null) ? int.Parse(Request.Params["Country"]) : -1;
     return PartialView(new Customer { Country = country });
 }
 ```
+
 ## Files to Look At
 * [HomeController.cs](./CS/DevExpressMvc3CascadingCombo/Controllers/HomeController.cs)
 * [Customer.cs](./CS/DevExpressMvc3CascadingCombo/Models/Customer.cs)
