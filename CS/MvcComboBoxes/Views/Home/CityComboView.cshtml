@@ -1,6 +1,4 @@
-﻿@model IEnumerable<MvcComboBoxes.Models.Order>
-
-@Html.DevExpress().ComboBox(settings => {
+﻿@Html.DevExpress().ComboBox(settings => {
     settings.Name = "City";
     settings.Properties.Caption = "City";
     settings.Properties.CaptionSettings.Position = EditorCaptionPosition.Top;
@@ -9,5 +7,6 @@
     settings.Properties.TextField = "ShipCity";
     settings.Properties.ValueField = "ShipCity";
     settings.Properties.CallbackPageSize = 20;
+    settings.ClientEnabled = false;
 }).BindList(Model).GetHtml()
 
