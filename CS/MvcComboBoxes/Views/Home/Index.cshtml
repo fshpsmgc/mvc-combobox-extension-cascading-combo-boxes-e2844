@@ -1,0 +1,10 @@
+@model IEnumerable<MvcComboBoxes.Models.Order>
+
+@{
+    ViewBag.Title = "ASP.NET MVC - Cascading Combo Boxes";
+}
+
+
+@Html.Partial("CountryComboView", Model)
+@Html.Partial("CityComboView")
+

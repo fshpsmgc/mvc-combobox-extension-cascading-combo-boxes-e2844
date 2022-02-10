@@ -1,0 +1,13 @@
+﻿@model IEnumerable<MvcComboBoxes.Models.Order>
+
+@Html.DevExpress().ComboBox(settings => {
+    settings.Name = "City";
+    settings.Properties.Caption = "City";
+    settings.Properties.CaptionSettings.Position = EditorCaptionPosition.Top;
+    settings.CallbackRouteValues = new { Controller = "Home", Action = "CityComboView" };
+    settings.Properties.ValueType = typeof(string);
+    settings.Properties.TextField = "ShipCity";
+    settings.Properties.ValueField = "ShipCity";
+    settings.Properties.CallbackPageSize = 20;
+}).BindList(Model).GetHtml()
+

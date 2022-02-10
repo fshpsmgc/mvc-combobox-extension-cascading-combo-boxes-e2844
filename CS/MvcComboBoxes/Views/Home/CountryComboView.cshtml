@@ -1,0 +1,16 @@
+﻿@model IEnumerable<MvcComboBoxes.Models.Order>
+
+@Html.DevExpress().ComboBox(settings => {
+    settings.Name = "Country";
+    settings.Properties.Caption = "Country";
+    settings.Properties.CaptionSettings.Position = EditorCaptionPosition.Top;
+    settings.CallbackRouteValues = new { Controller = "Home", Action = "CountryComboView" };
+    settings.Properties.ValueType = typeof(string);
+    settings.Properties.TextField = "ShipCountry";
+    settings.Properties.ValueField = "ShipCountry";
+    settings.Properties.CallbackPageSize = 20;
+    settings.Properties.ClientSideEvents.SelectedIndexChanged = "function(s, e) { City.PerformCallback({countryName: Country.GetValue()}); }";
+}).BindList(Model).GetHtml()
+
+
+
