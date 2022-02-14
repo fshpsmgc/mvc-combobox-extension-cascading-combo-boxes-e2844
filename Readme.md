@@ -12,10 +12,10 @@ This example illustrates how to use the MVC ComboBox extension to implement casc
 
 Use the following technique to setup a cascade of ComboBox editors:
 
-Handle a selection change of the first combo box (the client-side [SelectedIndexChanged](https://docs.devexpress.com/AspNet/js-ASPxClientComboBox.SelectedIndexChanged) event). In the handler, send a callback for the second ComboBox (with the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.PerformCallback(data)) method) and pass the first combo box's value to the server. On the server, handle the `Action` method of the second ComboBox (specified in the [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues)) and use the passed value to get the items for the second combo box. Pass the items for the second combo box to the View.
+Handle a selection change of the first combo box (the client-side [SelectedIndexChanged](https://docs.devexpress.com/AspNet/js-ASPxClientComboBox.SelectedIndexChanged) event). In the handler, send a callback for the second combo box (with the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.PerformCallback(data)) method) and pass the first combo box's value to the server. On the server, handle the `Action` method of the second ComboBox (specified in the [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues) property) and use the passed value to get the items for the second combo box. Pass the items for the second combo box to the view.
 
 ## Setup Combo Boxes and Their Items
-Setup the Country combo box ([CountryComboView.cshtml](/CS/MvcComboBoxes/Views/Home/CountryComboView.cshtml)) and the City combo box ([CityComboView.cshtml](CS/MvcComboBoxes/Views/Home/CityComboView.cshtml)) as partial views. Use the [BindList](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.ComboBoxExtension.BindList(System.Object)) method to bind the data, obtained from the controller, to the combo boxes. Note, that you should get the data for the first combo box in the Index action and pass it to the view. The second combo box obtains the data during the callback. 
+Setup the Country combo box ([CountryComboView.cshtml](/CS/MvcComboBoxes/Views/Home/CountryComboView.cshtml)) and the City combo box ([CityComboView.cshtml](CS/MvcComboBoxes/Views/Home/CityComboView.cshtml)) as partial views. Use the [BindList](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.ComboBoxExtension.BindList(System.Object)) method to bind the data obtained from the controller to the combo boxes. Note that you should get the data for the first combo box in the Index action and pass it to the view. The second combo box obtains the data during the callback. 
 
 ```c#
 // Index.cshtml
@@ -47,7 +47,7 @@ public ActionResult Index() {
 ```
 
 ## Respond to a Selection Change and Initiate a Callback
-Handle the first combo box's client-side [SelectedIndexChanged](https://docs.devexpress.com/AspNet/js-ASPxClientComboBox.SelectedIndexChanged) event. In the event handler, call the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.PerformCallback(data)) method of the second combo box. This sends a callback to the server for the second editor and calls the handler specified in the [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues). Pass the filter criterion (the first combo box's selected value) to the server in the PerformCallback method's `data` parameter.
+Handle the first combo box's client-side [SelectedIndexChanged](https://docs.devexpress.com/AspNet/js-ASPxClientComboBox.SelectedIndexChanged) event. In the event handler, call the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.PerformCallback(data)) method of the second combo box. This method sends a callback to the server and calls the handler specified in the [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues) property. Pass the filter criterion (the first combo box's selected value) to the server in the PerformCallback method's `data` parameter.
 
 ```c#
 @Html.DevExpress().ComboBox(settings => {
@@ -58,9 +58,45 @@ Handle the first combo box's client-side [SelectedIndexChanged](https://docs.dev
 
 ```
 
+## Pass the Selected Value to the Server
+There are two ways to pass the data to the server to use as a filter. You can either pass the filter during a callback in the `data` parameter or use BeginCallback to pass the value as a request parameter.
+
+### Use PerformCallback's Parameter
+You can pass the value of the first combo box during the callback with the PerformCallback's `data` parameter. To use this method, the server-side method, specified in the CallbackRouteValues property must have matching signature. You must set the Action's parameters in the view by name.
+```c#
+// CityComboView.cshtml
+@Html.DevExpress().ComboBox(settings => {
+    settings.Name = "Country";
+    ...
+    settings.Properties.ClientSideEvents.SelectedIndexChanged = "function(s, e) { City.PerformCallback({countryName: Country.GetValue()}); }";
+```
+
+```c#
+// HomeController.cs
+public ActionResult CityComboView(string countryName) {
+    var cities = db.Orders.Where(c => c.ShipCountry == countryName).ToList();
+```
+
+### Use BeginCallback's Custom Arguments
+You can also handle the client-side BeginCallback event to pass the value of the first combo box during the callback. 
+```c#
+// CityComboView.cshtml
+Html.DevExpress().ComboBox(settings => {
+    settings.Name = "City";
+    ...
+    settings.Properties.ClientSideEvents.BeginCallback = "function(s, e) { e.customArgs['Country'] = Country.GetValue(); }";
+```
+
+```c#
+// HomeController.cs
+public ActionResult CityComboView() {
+    string country = Request.Params["Country"];
+    ...
+```
+
 ## Filter Data Source Items
 
-Handle the method specified in the second combo box's [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues) that fires in response to a call to the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.PerformCallback(data)) method. In the handler, use the event argument's `data` property to obtain the first combo box's selected value passed from the client side. Use this value to filter the second combo box's data source.
+Handle the method specified in the second combo box's [CallbackRouteValues](https://docs.devexpress.com/AspNetMvc/DevExpress.Web.Mvc.AutoCompleteBoxBaseSettings.CallbackRouteValues) property that fires in response to a call to the client-side [PerformCallback](https://docs.devexpress.com/AspNetMvc/js-MVCxClientComboBox.PerformCallback(data)) method. In the handler, use the event argument's `data` property to obtain the first combo box's selected value passed from the client side. Use this value to filter the second combo box's data source.
 
 ```c#
 @Html.DevExpress().ComboBox(settings => {
